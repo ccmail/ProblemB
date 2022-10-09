@@ -115,7 +115,7 @@ func InitPopulation(popNum, chromosomeNum int) [][]int {
 	return ans
 }
 
-func Score(population [][]int, stripes []Pair, currIdx int) []int {
+/*func Score(population [][]int, stripes []Pair, currIdx int) []int {
 	res := make([]int, PopulationNum)
 	genesNum := len(population[0])
 	//minScore := 0x7fffffff
@@ -139,4 +139,28 @@ func Score(population [][]int, stripes []Pair, currIdx int) []int {
 		res[i] = score
 	}
 	return res
+}
+*/
+
+// Score 采用轮盘赌方法, 分数上,使用材料数量最少的权重最大,
+func Score(population [][]int, items []Pair) []float64 {
+	materialNum := make([]int, len(population))
+	sum := 0
+	for i, pop := range population {
+		stack := MergeStack(items, pop)
+		stripe := MergeStripe(stack)
+		materialNum[i] = len(stripe)
+		sum += materialNum[i]
+	}
+	score := make([]float64, len(population))
+	for i, v := range materialNum {
+		score[i] = (float64(v) / float64(sum)) * float64(sum-v)
+	}
+	//累加概率
+	probabilitySum := 0.0
+	for i, v := range score {
+		probabilitySum += v
+		score[i] = probabilitySum
+	}
+	return score
 }

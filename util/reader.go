@@ -57,8 +57,8 @@ func ReadCsv() (ans []Pair) {
 			log.Fatal("读取csv行时发生了错误，错误信息如下： \n", err)
 		}
 		id, _ := strconv.Atoi(line[0])
-		length, _ := strconv.ParseFloat(line[3], 32)
-		width, _ := strconv.ParseFloat(line[4], 32)
+		length, _ := strconv.ParseFloat(line[3], 64)
+		width, _ := strconv.ParseFloat(line[4], 64)
 		//调整item的长宽，保证长比宽大
 		length = MaxF(length, width)
 		width = MinF(length, width)
