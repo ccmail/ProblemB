@@ -37,5 +37,5 @@ func ShuffleInt(x []int) []int {
 
 // RandFloat64 1e(-9)级别的返回随机小数
 func RandFloat64() float64 {
-	return float64(rand.Intn(1e9)) / 1e9
+	return float64(rand.Intn(1e16)) / 1e16
 }

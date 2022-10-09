@@ -16,10 +16,10 @@ var (
 func main() {
 
 	data := util.ReadCsv()
-	item_cnt := 0
-	for i := range data {
-		item_cnt += data[i].Count
-	}
+	/*	item_cnt := 0
+		for i := range data {
+			item_cnt += data[i].Count
+		}*/
 	//fmt.Println("item初始数量为", item_cnt)
 	//赋值
 	BatchNumber = len(data)
@@ -32,16 +32,19 @@ func main() {
 
 	//先迭代300次
 	for epoch := 0; epoch < util.EpochNum; epoch++ {
-		//首先生成每个个体的分数，分数最高的概率不参加繁殖
+		//首先生成每个个体的分数（概率）
 		score := util.Score(Population, data)
-		newGeneration := make([][]int, 0, util.PopulationNum)
-		for i := range Population {
-			currProbability := util.RandFloat64()
-			if currProbability < score[i] {
-				newGeneration = append(newGeneration, Population[i])
-				Population = append(Population[:i], Population[i+1:]...)
-			}
-		}
+
+		fmt.Println(len(score), len(Population))
+		fmt.Println(len(Population))
+
+		newGeneration := make([][]int, 0)
+		Population, newGeneration = util.PickBest(Population, score)
+		fmt.Println(len(Population))
+
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
 		//随机挑一个不参加繁殖
 		if len(Population)%2 != 0 {
 			randIndex := rand.Intn(len(Population))
@@ -53,9 +56,6 @@ func main() {
 
 		//在这里由个体的染色体排列得到实际的排列组合情况, 根据实际排列情况进行打分
 		//stack存在一个id
-		/*		stack := MergeStack(data, Population[0])
-				stripe := MergeStripe(stack)
-				util.Score(Population, stripe, 0)*/
 
 		//两两结合， 产子概率0.9，每次产子随机交换父母染色体
 		for pairNum := len(male) - 1; pairNum >= 0; pairNum-- {
@@ -67,10 +67,12 @@ func main() {
 			//添加到新种群
 			newGeneration = append(newGeneration, son, daughter)
 		}
+		fmt.Println("新世代个体数是", len(newGeneration))
 
+		Population = make([][]int, len(newGeneration))
 		//更细世代
 		copy(Population, newGeneration)
-		//fmt.Println(epoch)
+		//fmt.Println("第", epoch+1, "次迭代完成，最优的个体使用的钢板数为", len(ans))
 	}
 
 	ansVal := 0x7ffffff
@@ -83,15 +85,18 @@ func main() {
 			ansVal, ans = len(stripe), stripe
 		}
 	}
-	fmt.Println()
-	fmt.Println()
-	fmt.Println()
-	fmt.Println()
-	fmt.Println("最终答案使用钢板数是", len(ans))
-	fmt.Println()
-	fmt.Println()
-	fmt.Println()
-	fmt.Println()
+
+	util.OutPutImage(ans, data)
+
+	/*	fmt.Println()
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
+		fmt.Println("最终答案使用钢板数是", len(ans))
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()*/
 }
 
 /*func MergeStripe(stacks []util.Pair) util.Pair {

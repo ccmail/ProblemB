@@ -1,7 +1,9 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
+	"sort"
 )
 
 // Cross 交叉两个个体的基因
@@ -143,24 +145,89 @@ func InitPopulation(popNum, chromosomeNum int) [][]int {
 */
 
 // Score 采用轮盘赌方法, 分数上,使用材料数量最少的权重最大,
-func Score(population [][]int, items []Pair) []float64 {
-	materialNum := make([]int, len(population))
-	sum := 0
+func Score(population [][]int, items []Pair) []SortIndex {
+	materialNum := make([]float64, len(population))
+	sum := 0.0
 	for i, pop := range population {
 		stack := MergeStack(items, pop)
+
 		stripe := MergeStripe(stack)
-		materialNum[i] = len(stripe)
+		materialNum[i] = 1.0 / float64(len(stripe))
 		sum += materialNum[i]
 	}
+	temp := make([]SortIndex, len(population))
 	score := make([]float64, len(population))
+	totalPro := 0.0
 	for i, v := range materialNum {
-		score[i] = (float64(v) / float64(sum)) * float64(sum-v)
+		score[i] = v / sum
+		temp[i] = SortIndex{score[i], i}
+		totalPro += score[i]
 	}
-	//累加概率
+	fmt.Println(totalPro)
+
+	//按照被选中的概率从小到大排序
+	sort.Slice(temp, func(i, j int) bool {
+		return temp[i].Probability < temp[j].Probability
+	})
+
 	probabilitySum := 0.0
-	for i, v := range score {
+	for _, currProIndex := range temp {
+		probabilitySum += currProIndex.Probability
+		currProIndex.Probability = probabilitySum
+	}
+	//这里累加的有问题
+	/*for i, v := range score {
 		probabilitySum += v
 		score[i] = probabilitySum
 	}
-	return score
+	*/
+	return temp
+}
+
+func PickBest(population [][]int, score []SortIndex) (oldGeneration [][]int, newGeneration [][]int) {
+	newGeneration = make([][]int, 0)
+	deletePopulation := make([]int, 0)
+
+	delSet := make(map[int]struct{})
+	//newSet := make(map[int]struct{})
+
+	for i := 0; i < BestNum; i++ {
+		//按照概率进行,
+		currProbability := RandFloat64()
+		sumProbability := 0.0
+		for _, v := range score {
+			sumProbability += v.Probability
+			if sumProbability >= currProbability {
+				delSet[v.Index] = struct{}{}
+				//找到了精英个体
+				//newGeneration = append(newGeneration, population[v.Index])
+				//deletePopulation = append(deletePopulation, v.Index)
+				break
+			}
+		}
+	}
+
+	for i := range delSet {
+		deletePopulation = append(deletePopulation, i)
+	}
+
+	sort.Ints(deletePopulation)
+	oldGeneration = make([][]int, 0)
+	delIdx := 0
+	for i := range population {
+		if delIdx < len(deletePopulation) && i == deletePopulation[delIdx] {
+			//oldGeneration = append(oldGeneration, population[i])
+			newGeneration = append(newGeneration, population[i])
+			delIdx++
+			continue
+		}
+		if len(oldGeneration)+delIdx != i {
+			fmt.Println()
+		}
+		if delIdx == deletePopulation[len(deletePopulation)>>1] {
+			fmt.Println()
+		}
+		oldGeneration = append(oldGeneration, population[i])
+	}
+	return oldGeneration, newGeneration
 }

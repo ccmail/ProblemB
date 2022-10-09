@@ -5,3 +5,8 @@ type Pair struct {
 	Count         int
 	Ids           []int
 }
+
+type SortIndex struct {
+	Probability float64
+	Index       int
+}
