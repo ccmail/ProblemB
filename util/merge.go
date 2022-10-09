@@ -1,7 +1,5 @@
 package util
 
-import "fmt"
-
 //MergeStack 工件列表，以及工件的排列顺序
 func MergeStack(items []Pair, individual []int) []Pair {
 	var stack []Pair
@@ -46,12 +44,12 @@ func MergeStack(items []Pair, individual []int) []Pair {
 	}
 
 	cnt := 0
-	fmt.Println("stack的个数是", len(stack))
+	//fmt.Println("stack的个数是", len(stack))
 	for _, v := range stack {
 		cnt += len(v.Ids)
-		fmt.Println(v.Length, v.Width)
+		//fmt.Println(v.Length, v.Width)
 	}
-	fmt.Println("stack里的item有", cnt)
+	//fmt.Println("stack里的item有", cnt)
 	//等下合并为stripe的时候按照插入stack的顺序组合，边界按宽度来
 	return stack
 	/*	for i := 0; i < len(individual); i++ {
@@ -116,11 +114,11 @@ func MergeStripe(stacks []Pair) []Pair {
 				len(stackIds), copyStacksIds})
 	}
 
-	fmt.Println("stripe的个数是", len(stripe))
+	//fmt.Println("stripe的个数是", len(stripe))
 	cnt := 0
 	for _, v := range stripe {
 		cnt += len(v.Ids)
 	}
-	fmt.Println("stripe中的item个数是", cnt)
+	//fmt.Println("stripe中的item个数是", cnt)
 	return stripe
 }

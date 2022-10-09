@@ -20,7 +20,7 @@ func main() {
 	for i := range data {
 		item_cnt += data[i].Count
 	}
-	fmt.Println("item初始数量为", item_cnt)
+	//fmt.Println("item初始数量为", item_cnt)
 	//赋值
 	BatchNumber = len(data)
 	//初始化种群，创建PopulationNum个个体，染色体为BatchNumber的随机排列
