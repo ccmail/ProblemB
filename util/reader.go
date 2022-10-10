@@ -15,7 +15,7 @@ var (
 	root = "./data/a"
 )
 
-func scanDir() (files []string) {
+func ScanDir() (files []string) {
 	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 		files = append(files, path)
 		return nil
@@ -30,12 +30,13 @@ func scanDir() (files []string) {
 	return files
 }
 
-func ReadCsv() (ans []Pair) {
-	files := scanDir()
+func ReadCsv(files string) (ans []Pair, idMap map[int]int, material string) {
+	//files := ScanDir()
 	//for _, filePath := range files {
 	//	file, err := os.Open(filePath)
-	file, err := os.Open(files[0])
-
+	file, err := os.Open(files)
+	idMap = make(map[int]int)
+	//var material string
 	if err != nil {
 		log.Fatal("\n读取文件时发生了错误, 错误信息如下： \n", err)
 	}
@@ -56,15 +57,17 @@ func ReadCsv() (ans []Pair) {
 		if err != nil {
 			log.Fatal("读取csv行时发生了错误，错误信息如下： \n", err)
 		}
-		//id, _ := strconv.Atoi(line[0])
+		originalId, _ := strconv.Atoi(line[0])
 		length, _ := strconv.ParseFloat(line[3], 64)
 		width, _ := strconv.ParseFloat(line[4], 64)
+		material = line[1]
 		//调整item的长宽，保证长比宽大
 		length = MaxF(length, width)
 		width = MinF(length, width)
 		/*		if _, ok := res[[2]float64{length, width}]; !ok {
 				//res[[2]float64{length, width}] = make([]int, 0)
 			}*/
+		idMap[id] = originalId
 		ans = append(ans, Pair{
 			length, width, 1, []int{id},
 		})
@@ -74,5 +77,5 @@ func ReadCsv() (ans []Pair) {
 	/*for key, val := range res {
 		ans = append(ans, Pair{key[0], key[1], len(val), val})
 	}*/
-	return ans
+	return ans, idMap, material
 }

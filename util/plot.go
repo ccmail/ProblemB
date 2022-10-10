@@ -1,6 +1,7 @@
 package util
 
 import (
+	"encoding/csv"
 	"fmt"
 	"github.com/fogleman/gg"
 	"image"
@@ -20,7 +21,25 @@ var (
 	red   = "red"
 )
 
-func OutPutImage(stripe, item []Pair) {
+func OutPutImageAndCsv(stripe, item []Pair, idMap map[int]int, material, fileName string) {
+
+	csvName := "./output/cut_program.csv"
+	file, fileIsExist := os.Open(csvName)
+	//如果文件不存在
+	if fileIsExist != nil {
+		file, _ = os.Create(csvName)
+		//中文乱码解决
+		file.WriteString("\xEF\xBB\xBF")
+	} else {
+		file, _ = os.OpenFile(csvName, os.O_APPEND|os.O_RDWR, 0666)
+	}
+	defer file.Close()
+	csvFile := csv.NewWriter(file)
+	if fileIsExist != nil {
+		csvFile.Write([]string{"原片材质", "原片序号", "原片id", "产品x坐标", "产品y坐标", "产品x方向长度", "产品y方向长度"})
+	}
+	csvFile.Flush()
+	defer csvFile.Flush()
 	dc = gg.NewContext(2800, 1400)
 
 	dc.SetHexColor("#000000")
@@ -32,10 +51,13 @@ func OutPutImage(stripe, item []Pair) {
 
 	totalImage := 0
 	imageCnt := 0
+
+	materialCnt := 1
 	for _, v := range stripe {
 
 		if imageCnt > 16 {
-			dc.SavePNG("./output/out" + strconv.Itoa(totalImage) + ".png")
+			path := "./output/img/" + fileName + "out" + strconv.Itoa(totalImage) + ".png"
+			dc.SavePNG(path)
 			totalImage++
 			imageCnt = 0
 			currStartX, currStartY = 0.0, 0.0
@@ -53,6 +75,16 @@ func OutPutImage(stripe, item []Pair) {
 				drawMaxLength = 0
 				drawMaxWidth = 0
 			}
+
+			writeToCsvLine := []string{
+				material, strconv.Itoa(materialCnt), strconv.Itoa(idMap[itemId]),
+				strconv.FormatFloat(currStartX+drawMaxLength, 'f', 1, 64),
+				strconv.FormatFloat(currStartY+recordWidth, 'f', 1, 64),
+				strconv.FormatFloat(item[itemId].Length, 'f', 1, 64),
+				strconv.FormatFloat(item[itemId].Width, 'f', 1, 64)}
+
+			csvFile.Write(writeToCsvLine)
+
 			drawRectangleLine(currStartX+(drawMaxLength/4), currStartY+recordWidth/4,
 				item[itemId].Length/4, item[itemId].Width/4, colorIdx)
 			colorIdx++
@@ -60,6 +92,7 @@ func OutPutImage(stripe, item []Pair) {
 			drawMaxWidth = MaxF(drawMaxWidth, item[itemId].Width)
 
 		}
+		materialCnt++
 		imageCnt++
 		currStartX = float64((imageCnt % 4) * 700)
 		currStartY = float64((imageCnt / 4) * 360)
@@ -70,7 +103,6 @@ func OutPutImage(stripe, item []Pair) {
 	//dc.SetRGB(0, 0, 0)
 	//dc.Fill()
 
-	reverseImage()
 }
 
 func drawRectangleBackBound(x float64, y float64, w float64, h float64, color string) {
@@ -102,8 +134,8 @@ func drawRectangleLine(x, y, w, h float64, color int) {
 	//dc.Stroke()
 }
 
-func reverseImage() {
-	root := "./output"
+func ReverseImage() {
+	root := "./output/img"
 	images := make([]string, 0)
 	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 		images = append(images, path)
@@ -113,11 +145,11 @@ func reverseImage() {
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range images {
-		fmt.Println(file)
-	}
+	//for _, file := range images {
+	//	fmt.Println(file)
+	//}
 
-	for _, imageName := range images[:1] {
+	for idx, imageName := range images {
 		file, err := os.Open(imageName)
 		if err != nil {
 			log.Fatal("\n读取图片时发生了错误, 错误信息如下： \n", err)
@@ -141,7 +173,7 @@ func reverseImage() {
 				newRGBImage.SetRGBA(i, r, color.RGBA{uint8(l_r), uint8(l_g), uint8(l_b), uint8(l_a)})
 
 			}
-			//fmt.Println("图片调整中....", "第", idx, "张...", i, "/", x)
+			fmt.Println("图片调整中....", "第", idx, "张...", i, "/", x)
 		}
 
 		outFile, _ := os.Create(imageName)
