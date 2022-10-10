@@ -72,7 +72,25 @@ func main() {
 		Population = make([][]int, len(newGeneration))
 		//更细世代
 		copy(Population, newGeneration)
-		//fmt.Println("第", epoch+1, "次迭代完成，最优的个体使用的钢板数为", len(ans))
+		ansVal := 0x7ffffff
+
+		ans := []util.Pair{}
+		//	经过300代繁殖后，挑选使用钢板最少的
+		for _, v := range Population {
+			stack := util.MergeStack(data, v)
+			stripe := util.MergeStripe(stack)
+			if ansVal > len(stripe) {
+				ansVal, ans = len(stripe), stripe
+			}
+		}
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
+
+		fmt.Println("第", epoch+1, "次迭代完成，最优的个体使用的钢板数为", len(ans))
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
 	}
 
 	ansVal := 0x7ffffff

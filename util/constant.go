@@ -9,9 +9,9 @@ const (
 	/**遗传算法设置**/
 
 	// PopulationNum 种群数量
-	PopulationNum int = 100
+	PopulationNum int = 10000
 	// EpochNum 迭代次数
-	EpochNum int = 10000
+	EpochNum int = 1000000000
 	//MaxMutationNum 变异基因数，每次随机变异[1,MaxMutationNum]个,最小值设置应当为1
 	MaxMutationNum = 10
 
