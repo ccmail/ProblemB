@@ -35,16 +35,16 @@ func main() {
 		//首先生成每个个体的分数（概率）
 		score := util.Score(Population, data)
 
-		fmt.Println(len(score), len(Population))
-		fmt.Println(len(Population))
+		//fmt.Println(len(score), len(Population))
+		//fmt.Println(len(Population))
 
 		newGeneration := make([][]int, 0)
 		Population, newGeneration = util.PickBest(Population, score)
-		fmt.Println(len(Population))
+		//fmt.Println(len(Population))
 
-		fmt.Println()
-		fmt.Println()
-		fmt.Println()
+		//fmt.Println()
+		//fmt.Println()
+		//fmt.Println()
 		//随机挑一个不参加繁殖
 		if len(Population)%2 != 0 {
 			randIndex := rand.Intn(len(Population))
@@ -83,11 +83,9 @@ func main() {
 				ansVal, ans = len(stripe), stripe
 			}
 		}
-		fmt.Println()
-		fmt.Println()
-		fmt.Println()
 
-		fmt.Println("第", epoch+1, "次迭代完成，最优的个体使用的钢板数为", len(ans))
+		fmt.Println("第", epoch+1, "/", util.EpochNum, "次迭代完成，最优的个体使用的钢板数为", len(ans))
+
 		fmt.Println()
 		fmt.Println()
 		fmt.Println()

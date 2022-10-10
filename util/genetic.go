@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 )
@@ -163,7 +162,7 @@ func Score(population [][]int, items []Pair) []SortIndex {
 		temp[i] = SortIndex{score[i], i}
 		totalPro += score[i]
 	}
-	fmt.Println(totalPro)
+	//fmt.Println(totalPro)
 
 	//按照被选中的概率从小到大排序
 	sort.Slice(temp, func(i, j int) bool {
@@ -221,12 +220,12 @@ func PickBest(population [][]int, score []SortIndex) (oldGeneration [][]int, new
 			delIdx++
 			continue
 		}
-		if len(oldGeneration)+delIdx != i {
-			fmt.Println()
-		}
-		if delIdx == deletePopulation[len(deletePopulation)>>1] {
-			fmt.Println()
-		}
+		//if len(oldGeneration)+delIdx != i {
+		//	fmt.Println()
+		//}
+		//if delIdx == deletePopulation[len(deletePopulation)>>1] {
+		//	fmt.Println()
+		//}
 		oldGeneration = append(oldGeneration, population[i])
 	}
 	return oldGeneration, newGeneration

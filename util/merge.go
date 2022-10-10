@@ -40,13 +40,13 @@ func MergeStack(items []Pair, individual []int) []Pair {
 		copyItemIds := make([]int, len(itemIds))
 		copy(copyItemIds, itemIds)
 		//再加就大于板材长度了，所哟判定形成了一个单独的栈,加入栈中时处理了下，保证“长>高”
-		/*stack = append(stack, Pair{
-		MaxF(stackLength, stackWidth), MinF(stackWidth, stackLength),
-		len(itemIds), copyItemIds})*/
 		stack = append(stack, Pair{
-			stackLength, stackWidth,
+			MaxF(stackLength, stackWidth), MinF(stackWidth, stackLength),
 			len(itemIds), copyItemIds})
-		stackWidth, stackLength, itemIds = 0, 0, itemIds[:0]
+		/*stack = append(stack, Pair{
+		stackLength, stackWidth,
+		len(itemIds), copyItemIds})
+		*/stackWidth, stackLength, itemIds = 0, 0, itemIds[:0]
 	}
 
 	cnt := 0

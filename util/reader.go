@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -24,9 +23,9 @@ func scanDir() (files []string) {
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range files {
-		fmt.Println(file)
-	}
+	//for _, file := range files {
+	//fmt.Println(file)
+	//}
 	files = files[1:]
 	return files
 }
@@ -60,9 +59,9 @@ func ReadCsv() (ans []Pair) {
 		//id, _ := strconv.Atoi(line[0])
 		length, _ := strconv.ParseFloat(line[3], 64)
 		width, _ := strconv.ParseFloat(line[4], 64)
-		/*		//调整item的长宽，保证长比宽大
-				length = MaxF(length, width)
-				width = MinF(length, width)*/
+		//调整item的长宽，保证长比宽大
+		length = MaxF(length, width)
+		width = MinF(length, width)
 		/*		if _, ok := res[[2]float64{length, width}]; !ok {
 				//res[[2]float64{length, width}] = make([]int, 0)
 			}*/
