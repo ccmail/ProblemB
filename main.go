@@ -110,7 +110,7 @@ func main() {
 		fileName := strings.Split(split[len(split)-1], ".")[0]
 		util.OutPutImageAndCsv(ans, data, idMap, material, fileName)
 	}
-	//util.ReverseImage()
+	util.ReverseImage()
 	/*	fmt.Println()
 		fmt.Println()
 		fmt.Println()
