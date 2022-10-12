@@ -21,9 +21,15 @@ var (
 	red   = "red"
 )
 
-func OutPutImageAndCsv(stripe, item []Pair, idMap map[int]int, material, fileName string) {
+func OutPutImageAndCsv(stripe, item []Pair, material, fileName string, batchCnt int) {
 
-	csvName := "./output/cut_program.csv"
+	var csvName string
+	if DataSetSelect == CheckA {
+		csvName = "./output/cut_program.csv"
+	} else {
+		csvName = "./output/sum_order.csv"
+	}
+
 	file, fileIsExist := os.Open(csvName)
 	//如果文件不存在
 	if fileIsExist != nil {
@@ -36,7 +42,12 @@ func OutPutImageAndCsv(stripe, item []Pair, idMap map[int]int, material, fileNam
 	defer file.Close()
 	csvFile := csv.NewWriter(file)
 	if fileIsExist != nil {
-		csvFile.Write([]string{"原片材质", "原片序号", "原片id", "产品x坐标", "产品y坐标", "产品x方向长度", "产品y方向长度"})
+		if DataSetSelect == CheckA {
+			csvFile.Write([]string{"原片材质", "原片序号", "原片id", "产品x坐标", "产品y坐标", "产品x方向长度", "产品y方向长度"})
+		} else {
+			csvFile.Write([]string{"批次序号", "原片材质", "原片序号", "原片id", "产品x坐标", "产品y坐标", "产品x方向长度", "产品y方向长度"})
+		}
+
 	}
 	csvFile.Flush()
 	defer csvFile.Flush()
@@ -56,7 +67,13 @@ func OutPutImageAndCsv(stripe, item []Pair, idMap map[int]int, material, fileNam
 	for _, v := range stripe {
 
 		if imageCnt > 16 {
-			path := "./output/img/" + fileName + "out" + strconv.Itoa(totalImage) + ".png"
+			var rootPath string
+			if DataSetSelect == CheckA {
+				rootPath = OutputPathA
+			} else {
+				rootPath = OutputPathB
+			}
+			path := rootPath + fileName + material + "out" + strconv.Itoa(totalImage) + ".png"
 			dc.SavePNG(path)
 			totalImage++
 			imageCnt = 0
@@ -77,12 +94,15 @@ func OutPutImageAndCsv(stripe, item []Pair, idMap map[int]int, material, fileNam
 			}
 
 			writeToCsvLine := []string{
-				material, strconv.Itoa(materialCnt), strconv.Itoa(idMap[itemId]),
+				material, strconv.Itoa(materialCnt), strconv.Itoa(item[itemId].originalIds[0]),
 				strconv.FormatFloat(currStartX+drawMaxLength, 'f', 1, 64),
 				strconv.FormatFloat(currStartY+recordWidth, 'f', 1, 64),
 				strconv.FormatFloat(item[itemId].Length, 'f', 1, 64),
 				strconv.FormatFloat(item[itemId].Width, 'f', 1, 64)}
 
+			if DataSetSelect != CheckA {
+				writeToCsvLine = append([]string{strconv.Itoa(materialCnt)}, writeToCsvLine...)
+			}
 			csvFile.Write(writeToCsvLine)
 
 			drawRectangleLine(currStartX+(drawMaxLength/4), currStartY+recordWidth/4,
@@ -128,16 +148,13 @@ func drawRectangleLine(x, y, w, h float64, color int) {
 		dc.SetHexColor("#FF8C00")
 	}
 	dc.Fill()
-	//dc.SetHexColor("#ffffff")
-	//dc.SetLineWidth(5)
-	//dc.StrokePreserve()
-	//dc.Stroke()
+
 }
 
-func ReverseImage() {
-	root := "./output/img"
+func ReverseImage(path string) {
+	//root := "./output/img"
 	images := make([]string, 0)
-	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
 		images = append(images, path)
 		return nil
 	})

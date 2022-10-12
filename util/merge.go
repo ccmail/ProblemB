@@ -10,6 +10,7 @@ func MergeStack(items []Pair, individual []int) []Pair {
 	stackLength, stackWidth := 0.0, 0.0
 	//将拼接到的items的id记录下来
 	itemIds := make([]int, 0)
+	itemOriginalIds := make([]int, 0)
 
 	//按照染色体拼接
 	for _, v := range individual {
@@ -20,11 +21,14 @@ func MergeStack(items []Pair, individual []int) []Pair {
 				//深拷贝，避免反向传播
 				copyItemIds := make([]int, len(itemIds))
 				copy(copyItemIds, itemIds)
+
+				copyItemOriginalIds := make([]int, len(itemOriginalIds))
+				copy(copyItemOriginalIds, itemOriginalIds)
 				//再加就大于板材长度了，所哟判定形成了一个单独的栈,加入栈中时处理了下，保证“长>高”
 				stack = append(stack, Pair{
 					MaxF(stackLength, stackWidth), MinF(stackWidth, stackLength),
-					len(itemIds), copyItemIds})
-				stackWidth, stackLength, itemIds = 0, 0, itemIds[:0]
+					len(itemIds), copyItemIds, copyItemOriginalIds})
+				stackWidth, stackLength, itemIds, itemOriginalIds = 0, 0, itemIds[:0], itemOriginalIds[:0]
 			}
 			//默认栈是按长度拼接，所以长度是取和，高度取max
 			stackLength += item.Length
@@ -32,6 +36,7 @@ func MergeStack(items []Pair, individual []int) []Pair {
 			stackWidth = MaxF(item.Width, stackWidth)
 			//将当前item编号加进去
 			itemIds = append(itemIds, item.Ids[j])
+			itemOriginalIds = append(itemOriginalIds, item.originalIds[j])
 		}
 	}
 	//收尾
@@ -39,14 +44,17 @@ func MergeStack(items []Pair, individual []int) []Pair {
 		//深拷贝，避免反向传播
 		copyItemIds := make([]int, len(itemIds))
 		copy(copyItemIds, itemIds)
+
+		copyItemOriginalIds := make([]int, len(itemOriginalIds))
+		copy(copyItemOriginalIds, itemOriginalIds)
 		//再加就大于板材长度了，所哟判定形成了一个单独的栈,加入栈中时处理了下，保证“长>高”
 		stack = append(stack, Pair{
 			MaxF(stackLength, stackWidth), MinF(stackWidth, stackLength),
-			len(itemIds), copyItemIds})
+			len(itemIds), copyItemIds, copyItemOriginalIds})
 		/*stack = append(stack, Pair{
 		stackLength, stackWidth,
 		len(itemIds), copyItemIds})
-		*/stackWidth, stackLength, itemIds = 0, 0, itemIds[:0]
+		//*/stackWidth, stackLength, itemIds, itemOriginalIds = 0, 0, itemIds[:0], itemOriginalIds[:0]
 	}
 
 	cnt := 0
@@ -68,28 +76,38 @@ func MergeStripe(stacks []Pair) []Pair {
 	var stripe []Pair
 	stripeLength, stripeWidth := 0.0, 0.0
 	stackIds := make([]int, 0)
+	stackOriginalIds := make([]int, 0)
 	for _, stack := range stacks {
 		if stripeWidth+stack.Width > MaxWidth {
 			copyStacksIds := make([]int, len(stackIds))
 			copy(copyStacksIds, stackIds)
+
+			copyStackOriginalIds := make([]int, len(stackOriginalIds))
+			copy(copyStackOriginalIds, stackOriginalIds)
 			stripe = append(
 				stripe,
 				Pair{stripeLength, stripeWidth,
-					len(stackIds), copyStacksIds})
-			stripeLength, stripeWidth, stackIds = 0, 0, stackIds[:0]
+					len(stackIds), copyStacksIds, copyStackOriginalIds})
+			stripeLength, stripeWidth, stackIds, stackOriginalIds = 0, 0, stackIds[:0], stackOriginalIds[:0]
 		}
 		stripeLength = MaxF(stripeLength, stack.Length)
 		stripeWidth += stack.Width
 		stackIds = append(stackIds, stack.Ids...)
+		stackOriginalIds = append(stackOriginalIds, stack.originalIds...)
 	}
 	//收尾
 	if len(stackIds) != 0 {
 		copyStacksIds := make([]int, len(stackIds))
 		copy(copyStacksIds, stackIds)
+
+		copyStackOriginalIds := make([]int, len(stackOriginalIds))
+		copy(copyStackOriginalIds, stackOriginalIds)
 		stripe = append(
 			stripe,
 			Pair{stripeLength, stripeWidth,
-				len(stackIds), copyStacksIds})
+				len(stackIds), copyStacksIds, copyStackOriginalIds})
+		stripeLength, stripeWidth, stackIds, stackOriginalIds = 0, 0, stackIds[:0], stackOriginalIds[:0]
+
 	}
 
 	//fmt.Println("stripe的个数是", len(stripe))

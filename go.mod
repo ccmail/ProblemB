@@ -2,7 +2,6 @@ module Huawei/ProblemB
 
 go 1.18
 
-//require github.com/go-echarts/go-echarts v2.2.4
 
 require github.com/fogleman/gg v1.3.0
 

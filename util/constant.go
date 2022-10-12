@@ -12,7 +12,7 @@ const (
 	PopulationNum int = 10000
 	// EpochNum 迭代次数
 	//EpochNum int = 10000
-	EpochNum int = 1
+	EpochNum int = 400
 	//MaxMutationNum 变异基因数，每次随机变异[1,MaxMutationNum]个,最小值设置应当为1
 	MaxMutationNum = 10
 
@@ -23,4 +23,14 @@ const (
 
 	// BestNum 轮盘选中个数
 	BestNum int = 10
+
+	DataSetSelect = "A"
+
+	CheckA    = "A"
+	CheckB    = "B"
+	DataPathA = "./data/a"
+	DataPathB = "./data/b"
+
+	OutputPathA = "./output/img/a/"
+	OutputPathB = "./output/img/b/"
 )

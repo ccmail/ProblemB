@@ -9,7 +9,7 @@ import (
 func Cross(x, y []int, p float64) ([]int, []int) {
 	currProbability := RandFloat64()
 	//以随机概率进行交配
-	if currProbability > p {
+	if currProbability > p || len(x) <= 1 {
 		return x, y
 	}
 	n := len(x)
@@ -82,7 +82,7 @@ func Mutation(x []int, mutationNum int, p float64) []int {
 	currMutationNum := MaxI(rand.Intn(mutationNum), 1)
 	currProbability := RandFloat64()
 	//以随机概率进行变异，大于p（init0.1）时不变异
-	if currProbability > p {
+	if currProbability > p || len(x) <= 1 {
 		return x
 	}
 	n := len(x)
