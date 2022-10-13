@@ -33,4 +33,7 @@ const (
 
 	OutputPathA = "./output/img/a/"
 	OutputPathB = "./output/img/b/"
+
+	Problem1stCsv = "../output/cut_program.csv"
+	Problem2ndCsv = "../output/sum_order.csv"
 )
